@@ -279,13 +279,30 @@ class NetsuiteStream(Stream):
                                             },
                                             "typeId": { 
                                                 "type":["string","null"]
-                                            },
+                                            }
                                         },
-                                        "type":["object","null"]
+                                        "type":"object"
                                     },
                                 },
                                 {
-                                    "type":["string","boolean","number","integer","null"]
+                                    "type":"object",
+                                     "properties": { 
+                                            "internalId": { 
+                                                "type":["string","null"]
+                                            },
+                                            "externalId": { 
+                                                "type":["string","null"]
+                                            },
+                                            "name": { 
+                                                "type":["string","null"]
+                                            },
+                                            "typeId": { 
+                                                "type":["string","null"]
+                                            }
+                                    }
+                                }, 
+                                {
+                                    "type":["string","boolean","integer","number"]
                                 }
 
                             ]
