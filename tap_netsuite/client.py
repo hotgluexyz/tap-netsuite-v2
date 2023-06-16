@@ -119,7 +119,7 @@ class NetsuiteStream(Stream):
         if include_search_preferences:
             search_preferences = self.search_client("SearchPreferences")
             preferences = {
-                "bodyFieldsOnly": True,
+                "bodyFieldsOnly": False,
                 "pageSize": self.page_size,
                 "returnSearchColumns": True,
             }
