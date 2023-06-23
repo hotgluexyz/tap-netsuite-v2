@@ -242,14 +242,18 @@ class NetsuiteStream(Stream):
 
     @cached_property
     def schema(self):
+        
         if getattr(self._tap, "input_catalog"):
+            self.logger.info(f"Pulling schema from input catalog for stream {self.name}")
             streams = self._tap.input_catalog.to_dict()
             streams = (s for s in streams["streams"] if s["tap_stream_id"] == self.name)
             stream_catalog = next(streams, None)
             if stream_catalog:
                 return stream_catalog["schema"]
         
+        self.logger.info(f"Pulling schema for stream {self.name}")
         if not hasattr(self._tap, "all_custom_fields"):
+            self.logger.info("Pulling custom fields from netsuite account")
             all_custom_fields = []
             for field_type in CUSTOM_FIELD_TYPES:
                 customFields = self.service_proxy.getCustomizationId(customizationType=field_type,includeInactives=False,_soapheaders = self.build_headers())
@@ -268,6 +272,7 @@ class NetsuiteStream(Stream):
         replication_key = next(
             (p for p in properties if p.name.lower() in REPLICATION_KEYS), None
         )
+        self.logger.info(f"Pulled schema for stream {self.name}")
         if replication_key:
             self.replication_key = replication_key.name
 
