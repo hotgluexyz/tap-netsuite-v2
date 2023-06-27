@@ -58,9 +58,9 @@ CUSTOM_SEARCH_FIELDS = {
 
 CUSTOM_FIELD_TYPES =  [
     "crmCustomField",
-    # "customList",
-    # "customRecordCustomField",
-    # "customSegment",
+    "customList",
+    "customRecordCustomField",
+    "customSegment",
     "entityCustomField",
     "itemCustomField",
     "itemOptionCustomField",
