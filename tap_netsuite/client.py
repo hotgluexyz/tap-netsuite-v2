@@ -260,7 +260,7 @@ class NetsuiteStream(Stream):
                 if customFields['body']['getCustomizationIdResult']['customizationRefList']:
                     for custom_field in customFields['body']['getCustomizationIdResult']['customizationRefList']['customizationRef']:
 
-                        property = th.Property(custom_field['scriptId'],th.CustomType(CUSTOM_FIELD_SCHEMA))
+                        property = th.Property(custom_field['scriptId'],th.CustomType(CUSTOM_FIELD_SCHEMA),required=True)
                         all_custom_fields.append(property)
             self._tap.all_custom_fields = all_custom_fields
 
