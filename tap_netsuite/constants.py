@@ -54,3 +54,20 @@ CUSTOM_SEARCH_FIELDS = {
     ],
     "ItemSearchBasic": ["InventoryItem"],
 }
+
+
+CUSTOM_FIELD_TYPES = [
+    # "crmCustomField",
+    # "customList",
+    # "customRecordCustomField",
+    # "customSegment",
+    # "entityCustomField",
+    # "itemCustomField",
+    # "itemOptionCustomField",
+    # "otherCustomField",
+    # "transactionBodyCustomField",
+    # "transactionColumnCustomField",
+]
+
+
+CUSTOM_FIELD_SCHEMA = {}
