@@ -357,6 +357,8 @@ class NetsuiteStream(Stream):
             property = th.IntegerType
         elif type_cls is Decimal:
             property = th.NumberType
+            if str in type_obj.type.accepted_types:
+                property = th.CustomType({"type": ["number", "string"]})
         elif type_cls is datetime:
             property = th.DateTimeType
         else:
