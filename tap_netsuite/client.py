@@ -286,7 +286,7 @@ class NetsuiteStream(Stream):
                                 },
                                 {
                                     "type":"object",
-                                     "properties": { 
+                                    "properties": { 
                                             "internalId": { 
                                                 "type":["string","null"]
                                             },
@@ -355,6 +355,7 @@ class NetsuiteStream(Stream):
                 raise RetriableAPIError(msg, status)
             else:
                 msg = self.response_error_message(status)
+                self.logger.error(msg)
                 raise FatalAPIError(msg)
 
     def response_error_message(self, status) -> str:
