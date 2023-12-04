@@ -1,6 +1,7 @@
 """Netsuite tap class."""
 import re
 import requests
+import logging
 
 from typing import List
 from xml.dom import minidom
