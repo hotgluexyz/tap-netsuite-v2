@@ -1,5 +1,4 @@
 """Netsuite tap class."""
-import re
 import requests
 import logging
 
@@ -13,10 +12,8 @@ from tap_netsuite.client import NetsuiteStream
 from tap_netsuite.saved_searches_client import SavedSearchesClient
 from tap_netsuite.constants import CUSTOM_SEARCH_FIELDS, SEARCH_ONLY_FIELDS, ADVANCED_SEARCH_TYPES_AND_URNS
 from tap_netsuite.exceptions import TypeNotFound
+from tap_netsuite.utils import config_type
 
-
-def config_type(text):
-    return re.sub(r'(?<!^)(?=[A-Z])', '_', text).lower()
 
 class TapNetsuite(Tap):
     """Netsuite tap class."""

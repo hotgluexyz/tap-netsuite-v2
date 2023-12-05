@@ -3,10 +3,12 @@ import xmltodict
 import logging
 
 from pendulum import parse
+from singer_sdk import typing as th
 from singer_sdk.streams import Stream
 from netsuitesdk.internal.client import NetSuiteClient
 
-from singer_sdk import typing as th
+from tap_netsuite.utils import config_type
+
 
 class SavedSearchesClient(Stream):
     name = "saved_search"
@@ -31,7 +33,7 @@ class SavedSearchesClient(Stream):
         super().__init__(*args, **kwargs)
 
     def prepare_schema(self):
-        saved_search_ids = self.config.get("TransactionSearchAdvanced")
+        saved_search_ids = self.config.get(config_type(self.ns_type))
         if saved_search_ids == None:
             return th.PropertiesList().to_dict()
 
