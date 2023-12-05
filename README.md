@@ -94,5 +94,51 @@ meltano elt tap-netsuite target-jsonl
 
 ### SDK Dev Guide
 
-See the [dev guide](https://sdk.meltano.com/en/latest/dev_guide.html) for more instructions on how to use the SDK to 
+See the [dev guide](https://sdk.meltano.com/en/latest/dev_guide.html) for more instructions on how to use the SDK to
 develop your own taps and targets.
+
+
+### Extra config flags
+
+In this tap, we have enabled the possibility of fetching saved searches on Netsuite. To do so, you need to add one or more of the parameters to your config file:
+
+```json
+{
+    "calendar_event_search_advanced": [your_saved_search_id_here],
+    "task_search_advanced": [your_saved_search_id_here],
+    "phone_call_search_advanced": [your_saved_search_id_here],
+    "file_search_advanced": [your_saved_search_id_here],
+    "folder_search_advanced": [your_saved_search_id_here],
+    "note_search_advanced": [your_saved_search_id_here],
+    "message_search_advanced": [your_saved_search_id_here],
+    "item_search_advanced": [your_saved_search_id_here],
+    "account_search_advanced": [your_saved_search_id_here],
+    "bin_search_advanced": [your_saved_search_id_here],
+    "classification_search_advanced": [your_saved_search_id_here],
+    "department_search_advanced": [your_saved_search_id_here],
+    "location_search_advanced": [your_saved_search_id_here],
+    "gift_certificate_search_advanced": [your_saved_search_id_here],
+    "sales_tax_item_search_advanced": [your_saved_search_id_here],
+    "subsidiary_search_advanced": [your_saved_search_id_here],
+    "employee_search_advanced": [your_saved_search_id_here],
+    "campaign_search_advanced": [your_saved_search_id_here],
+    "promotion_code_search_advanced": [your_saved_search_id_here],
+    "contact_search_advanced": [your_saved_search_id_here],
+    "customer_search_advanced": [your_saved_search_id_here],
+    "partner_search_advanced": [your_saved_search_id_here],
+    "vendor_search_advanced": [your_saved_search_id_here],
+    "entity_group_search_advanced": [your_saved_search_id_here],
+    "job_search_advanced": [your_saved_search_id_here],
+    "site_category_search_advanced": [your_saved_search_id_here],
+    "support_case_search_advanced": [your_saved_search_id_here],
+    "solution_search_advanced": [your_saved_search_id_here],
+    "topic_search_advanced": [your_saved_search_id_here],
+    "issue_search_advanced": [your_saved_search_id_here],
+    "custom_record_search_advanced": [your_saved_search_id_here],
+    "time_bill_search_advanced": [your_saved_search_id_here],
+    "budget_search_advanced": [your_saved_search_id_here],
+    "accounting_transaction_search_advanced": [your_saved_search_id_here],
+    "opportunity_search_advanced": [your_saved_search_id_here],
+    "transaction_search_advanced": [your_saved_search_id_here],
+}
+```

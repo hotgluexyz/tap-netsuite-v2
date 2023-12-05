@@ -1,15 +1,18 @@
 """Netsuite tap class."""
+import requests
+import logging
 
 from typing import List
 from xml.dom import minidom
 
-import requests
 from singer_sdk import Stream, Tap
 from singer_sdk import typing as th
 
 from tap_netsuite.client import NetsuiteStream
-from tap_netsuite.constants import CUSTOM_SEARCH_FIELDS, SEARCH_ONLY_FIELDS
+from tap_netsuite.saved_searches_client import SavedSearchesClient
+from tap_netsuite.constants import CUSTOM_SEARCH_FIELDS, SEARCH_ONLY_FIELDS, ADVANCED_SEARCH_TYPES_AND_URNS
 from tap_netsuite.exceptions import TypeNotFound
+from tap_netsuite.utils import config_type
 
 
 class TapNetsuite(Tap):
@@ -118,6 +121,17 @@ class TapNetsuite(Tap):
                 yield type(type_def["name"], (NetsuiteStream,), type_def)(tap=self)
             except TypeNotFound:
                 self.logger.info(f"Type {type_def['name']} not found in WSDL.")
+
+        for type_name, urn in ADVANCED_SEARCH_TYPES_AND_URNS.items():
+            if self.config.get(config_type(type_name)):
+                yield type(type_name, (SavedSearchesClient,), {
+                    "name": type_name,
+                    "_config": self.config,
+                    "ns_type": type_name,
+                    "ns_urn_type": urn,
+                })(
+                    tap=self
+                )
 
 
 if __name__ == "__main__":
