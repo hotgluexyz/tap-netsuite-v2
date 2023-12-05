@@ -2,7 +2,6 @@ import requests
 import xmltodict
 import logging
 
-from functools import cached_property
 from pendulum import parse
 from singer_sdk.streams import Stream
 from netsuitesdk.internal.client import NetSuiteClient
