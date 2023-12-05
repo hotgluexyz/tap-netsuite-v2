@@ -51,19 +51,23 @@ class SavedSearchesClient(Stream):
         fields = []
 
         for k, v in record.items():
+            if k == "customFieldList":
+                continue
+
             try:
                 parse(v)
                 fields.append(th.Property(k, th.DateTimeType))
             except:
                 fields.append(th.Property(k, th.StringType))
 
+        fields.append(th.Property(k, th.CustomType({"type": ["array", "string", "object"]})))
         return th.PropertiesList(*fields).to_dict()
 
     def get_records(self, context=None):
         if isinstance(self.config.get(self.ns_type), str):
-            saved_search_ids = self.config.get(self.ns_type).split(",")
+            saved_search_ids = self.config.get(config_type(self.ns_type)).split(",")
         else:
-            saved_search_ids = self.config.get(self.ns_type, [])
+            saved_search_ids = self.config.get(config_type(self.ns_type), [])
 
         for search_id in saved_search_ids:
             page = 1
@@ -100,6 +104,13 @@ class SavedSearchesClient(Stream):
         for record in records:
             formatted_record = {}
             for k, v in record[f"{type_nickname}:basic"].items():
+                if k == "platformCommon:customFieldList":
+                    formatted_record["customFieldList"] = [
+                        {
+                            k_.replace("@", "").split(":")[-1]: v_ for k_, v_ in n_v.items()
+                        } for n_v in v["platformCore:customField"]
+                    ]
+                    continue
                 if "@" in k:
                     continue
 
