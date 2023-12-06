@@ -33,12 +33,9 @@ class SavedSearchesClient(Stream):
         super().__init__(*args, **kwargs)
 
     def prepare_schema(self):
-        saved_search_ids = self.config.get(config_type(self.ns_type))
+        saved_search_ids = self.saved_searches.get(config_type(self.ns_type))
         if saved_search_ids == None:
             return th.PropertiesList().to_dict()
-
-        if isinstance(saved_search_ids, str):
-            saved_search_ids = saved_search_ids.split(",")
 
         id = saved_search_ids[0]
         records, _, _ = self.get_all_items_from_saved_searches(
@@ -64,10 +61,7 @@ class SavedSearchesClient(Stream):
         return th.PropertiesList(*fields).to_dict()
 
     def get_records(self, context=None):
-        if isinstance(self.config.get(self.ns_type), str):
-            saved_search_ids = self.config.get(config_type(self.ns_type)).split(",")
-        else:
-            saved_search_ids = self.config.get(config_type(self.ns_type), [])
+        saved_search_ids = self.saved_searches.get(config_type(self.ns_type), [])
 
         for search_id in saved_search_ids:
             page = 1
