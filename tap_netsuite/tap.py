@@ -94,33 +94,33 @@ class TapNetsuite(Tap):
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
 
-        # account = self.config["ns_account"].replace("_", "-")
-        # url = (
-        #     f"https://{account}.suitetalk.api.netsuite.com/"
-        #     "xsd/platform/v2022_2_0/coreTypes.xsd"
-        # )
-        # response = requests.get(url)
-        # types_xml = minidom.parseString(response.text)
+        account = self.config["ns_account"].replace("_", "-")
+        url = (
+            f"https://{account}.suitetalk.api.netsuite.com/"
+            "xsd/platform/v2022_2_0/coreTypes.xsd"
+        )
+        response = requests.get(url)
+        types_xml = minidom.parseString(response.text)
 
-        # core_types = []
-        # core_types.extend(self.extract_xml_types(types_xml, "GetAllRecordType"))
-        # core_types.extend(self.extract_xml_types(types_xml, "SearchRecordType"))
+        core_types = []
+        core_types.extend(self.extract_xml_types(types_xml, "GetAllRecordType"))
+        core_types.extend(self.extract_xml_types(types_xml, "SearchRecordType"))
 
-        # for search_type, types in CUSTOM_SEARCH_FIELDS.items():
-        #     for type_name in types:
-        #         core_types.append(
-        #             {
-        #                 "name": type_name,
-        #                 "record_type": "SearchRecordType",
-        #                 "search_type_name": search_type,
-        #             }
-        #         )
+        for search_type, types in CUSTOM_SEARCH_FIELDS.items():
+            for type_name in types:
+                core_types.append(
+                    {
+                        "name": type_name,
+                        "record_type": "SearchRecordType",
+                        "search_type_name": search_type,
+                    }
+                )
 
-        # for type_def in core_types:
-        #     try:
-        #         yield type(type_def["name"], (NetsuiteStream,), type_def)(tap=self)
-        #     except TypeNotFound:
-        #         self.logger.info(f"Type {type_def['name']} not found in WSDL.")
+        for type_def in core_types:
+            try:
+                yield type(type_def["name"], (NetsuiteStream,), type_def)(tap=self)
+            except TypeNotFound:
+                self.logger.info(f"Type {type_def['name']} not found in WSDL.")
 
         for type_name, urn in ADVANCED_SEARCH_TYPES_AND_URNS.items():
             if self.config.get(config_type(type_name)):
