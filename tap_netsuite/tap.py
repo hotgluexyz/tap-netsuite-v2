@@ -91,6 +91,16 @@ class TapNetsuite(Tap):
             )
         return types
 
+    def get_saved_searches_dict(self):
+        saved_searches = {}
+        for saved_query in self.config.get("saved_queries", []):
+            if saved_query["type"] not in saved_searches:
+                saved_searches[saved_query["type"]] = []
+
+            saved_searches[saved_query["type"]].append(saved_query["id"])
+
+        return saved_searches
+
     def discover_streams(self) -> List[Stream]:
         """Return a list of discovered streams."""
 
@@ -122,13 +132,15 @@ class TapNetsuite(Tap):
             except TypeNotFound:
                 self.logger.info(f"Type {type_def['name']} not found in WSDL.")
 
+        saved_searches = self.get_saved_searches_dict()
         for type_name, urn in ADVANCED_SEARCH_TYPES_AND_URNS.items():
-            if self.config.get(config_type(type_name)):
+            if saved_searches.get(config_type(type_name)):
                 yield type(type_name, (SavedSearchesClient,), {
                     "name": type_name,
                     "_config": self.config,
                     "ns_type": type_name,
                     "ns_urn_type": urn,
+                    "saved_searches": saved_searches
                 })(
                     tap=self
                 )
