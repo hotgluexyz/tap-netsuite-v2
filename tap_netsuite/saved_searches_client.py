@@ -105,6 +105,9 @@ class SavedSearchesClient(Stream):
             formatted_record = {}
             for k, v in record[f"{type_nickname}:basic"].items():
                 if k == "platformCommon:customFieldList":
+                    if isinstance(v["platformCore:customField"], dict):
+                        v["platformCore:customField"] = [v["platformCore:customField"]]
+
                     formatted_record["customFieldList"] = [
                         {
                             k_.replace("@", "").split(":")[-1]: v_ for k_, v_ in n_v.items()
