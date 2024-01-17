@@ -29,10 +29,13 @@ from tap_netsuite.exceptions import TypeNotFound
 class NetsuiteStream(Stream):
     """Stream class for Netsuite streams."""
 
-    page_size = 500
     primary_keys = ["internalId"]
     search_type_name = None
     valid_requests = ["getAllResult", "searchResult", "searchMoreWithIdResult"]
+
+    @property
+    def page_size(self):
+        return self.config.get("page_size", 500)
 
     @cached_property
     def account(self):
