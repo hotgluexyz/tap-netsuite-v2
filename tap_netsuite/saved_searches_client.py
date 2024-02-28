@@ -118,7 +118,10 @@ class SavedSearchesClient(Stream):
                     continue
 
                 field = k.split(":")[1]
-                value = v["platformCore:searchValue"]
+                value = v.get("platformCore:searchValue")
+                if not value:
+                    continue
+
                 if isinstance(value, dict):
                     formatted_record[f"{field}Id"] = value["@internalId"]
                 else:
