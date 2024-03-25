@@ -42,9 +42,9 @@ class SavedSearchesClient(Stream):
             saved_search_id=id,
             saved_search_type=self.ns_type,
             saved_search_type_urn=self.ns_urn_type,
-            page_size=5
+            page_size=1000
         )
-        record = next(self._parse_response_to_json(records))
+        record = next(self._parse_response_to_json(records,find_max=True))
         fields = []
 
         for k, v in record.items():
@@ -96,13 +96,16 @@ class SavedSearchesClient(Stream):
         search_response = search_response["platformCore:searchResult"]
         return search_response
 
-    def _parse_response_to_json(self, search_response):
+    def _parse_response_to_json(self, search_response,find_max=False):
         modified_search_response = search_response["platformCore:searchRowList"]
         records = modified_search_response["platformCore:searchRow"]
         type_nickname = records[0]["@xsi:type"].split(":")[0]
+        formatted_records = []  # List to store all formatted records
 
         for record in records:
             formatted_record = {}
+
+            # Extract basic information
             for k, v in record[f"{type_nickname}:basic"].items():
                 if k == "platformCommon:customFieldList":
                     if isinstance(v["platformCore:customField"], dict):
@@ -127,7 +130,33 @@ class SavedSearchesClient(Stream):
                 else:
                     formatted_record[field] = value
 
-            yield formatted_record
+            # Extract additional joins dynamically
+            for key, value in record.items():
+                if key.endswith("Join"):
+                    join_type = key.split(":")[1]  # Extract the join type (e.g., accountJoin)
+                    join_data = value
+                    if join_data:
+                        join_record = {}
+                        for join_key, join_value in join_data.items():
+                            if "@" in join_key:
+                                continue
+
+                            field = join_type+"."+join_key.split(":")[1]
+                            val = join_value.get("platformCore:searchValue")
+                            if isinstance(val,dict) and val:
+                                val_key, val =  next(iter(val.items()))
+                            # join_record[field] = val
+
+                            formatted_record[field] = val
+            if not find_max:
+                yield formatted_record
+            else:
+                formatted_records.append(formatted_record)
+        if find_max:
+            max_record = max(formatted_records, key=lambda x: len(x))
+            yield max_record
+
+
 
     def get_all_items_from_saved_search_w_id(
             self,
