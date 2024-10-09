@@ -142,15 +142,13 @@ class NetsuiteStream(Stream):
 
         result = getattr(response.body, request_type)
 
-        if hasattr(result, "totalRecords"):
-            page_size = result.totalRecords
-        elif result.totalPages == result.pageIndex:
+        if result.totalPages and result.totalPages == result.pageIndex:
             page_size = result.totalRecords - (result.pageIndex - 1) * result.pageSize
         else:
             page_size = result.pageSize
 
         request_status = "SUCCESS" if result.status.isSuccess else "ERROR"
-        extra_tags = dict(page_size=page_size)
+        extra_tags = dict(page_size=page_size, total_records=result.totalRecords)
         metric = {
             "type": "timer",
             "metric": "request_duration",
