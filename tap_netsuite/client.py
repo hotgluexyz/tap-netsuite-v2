@@ -21,6 +21,7 @@ from zeep import Client
 from zeep.cache import SqliteCache
 from zeep.helpers import serialize_object
 from zeep.transports import Transport
+from zeep.exceptions import Fault
 
 from tap_netsuite.constants import REPLICATION_KEYS, RETRYABLE_ERRORS
 from tap_netsuite.exceptions import TypeNotFound
@@ -136,37 +137,44 @@ class NetsuiteStream(Stream):
         is_search = name == "search"
         headers = self.build_headers(include_search_preferences=is_search)
 
-        request_start_time = time()
-        response = method(*args, _soapheaders=headers, **kwargs)
-        request_duration = time() - request_start_time
+        try:
+            request_start_time = time()
+            response = method(*args, _soapheaders=headers, **kwargs)
+            request_duration = time() - request_start_time
 
-        response_body_attrs = list(vars(response.body)["__values__"].keys())
-        request_type = next(k for k in response_body_attrs if k in self.valid_requests)
+            response_body_attrs = list(vars(response.body)["__values__"].keys())
+            request_type = next(k for k in response_body_attrs if k in self.valid_requests)
 
-        result = getattr(response.body, request_type)
+            result = getattr(response.body, request_type)
 
-        if hasattr(result, "totalRecords"):
-            page_size = result.totalRecords
-        elif result.totalPages == result.pageIndex:
-            page_size = result.totalRecords - (result.pageIndex - 1) * result.pageSize
-        else:
-            page_size = result.pageSize
+            if hasattr(result, "totalRecords"):
+                page_size = result.totalRecords
+            elif result.totalPages == result.pageIndex:
+                page_size = result.totalRecords - (result.pageIndex - 1) * result.pageSize
+            else:
+                page_size = result.pageSize
 
-        request_status = "SUCCESS" if result.status.isSuccess else "ERROR"
-        extra_tags = dict(page_size=page_size)
-        metric = {
-            "type": "timer",
-            "metric": "request_duration",
-            "value": round(request_duration, 4),
-            "tags": {
-                "object": self.name,
-                "status": request_status,
-            },
-        }
-        self._write_metric_log(metric=metric, extra_tags=extra_tags)
+            request_status = "SUCCESS" if result.status.isSuccess else "ERROR"
+            extra_tags = dict(page_size=page_size)
+            metric = {
+                "type": "timer",
+                "metric": "request_duration",
+                "value": round(request_duration, 4),
+                "tags": {
+                    "object": self.name,
+                    "status": request_status,
+                },
+            }
+            self._write_metric_log(metric=metric, extra_tags=extra_tags)
 
-        self.validate_response(result)
-        return result
+            self.validate_response(result)
+            return result
+        except Fault as fault:
+            self.logger.error(f"Fault: {fault}")
+            if "An unexpected error occurred" in str(fault):
+                raise RetriableAPIError("Retriable error due to unexpected fault.", fault)
+            else:
+                raise fault
 
     def get_all_records(self, context):
         type_name = self.name[0].lower() + self.name[1:]
