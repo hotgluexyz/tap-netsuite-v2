@@ -92,5 +92,5 @@ ADVANCED_SEARCH_TYPES_AND_URNS = {
     "BudgetSearchAdvanced": "financial_2017_2.transactions.webservices.netsuite.com",
     "AccountingTransactionSearchAdvanced": "sales_2017_2.transactions.webservices.netsuite.com",
     "OpportunitySearchAdvanced": "sales_2017_2.transactions.webservices.netsuite.com",
-    "TransactionSearchAdvanced": "sales_2017_2.transactions.webservices.netsuite.com"
+    "TransactionSearchAdvanced": "sales_2025_1.transactions.webservices.netsuite.com"
 }
