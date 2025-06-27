@@ -7,7 +7,7 @@ from singer_sdk import typing as th
 from singer_sdk.streams import Stream
 from netsuitesdk.internal.client import NetSuiteClient
 
-from tap_netsuite.utils import config_type
+from tap_netsuite.utils import config_type, get_api_version_from_urn
 
 
 class SavedSearchesClient(Stream):
@@ -167,12 +167,13 @@ class SavedSearchesClient(Stream):
             page=1,
             saved_search_internal_id=None
         ):
-        url = f"https://{self.config['ns_account']}.suitetalk.api.netsuite.com/services/NetSuitePort_2025_1"
+        api_version = get_api_version_from_urn(saved_search_type_urn)
+        url = f"https://{self.config['ns_account']}.suitetalk.api.netsuite.com/services/NetSuitePort_{api_version}"
         oauth_creds = self.ns_client._build_soap_headers()
         oauth_creds = oauth_creds["tokenPassport"]
-        base_request = f"""<soap:Envelope xmlns:platformFaults="urn:faults_2025_1.platform.webservices.netsuite.com" xmlns:platformMsgs="urn:messages_2025_1.platform.webservices.netsuite.com" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="urn:platform_2025_1.webservices.netsuite.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        base_request = f"""<soap:Envelope xmlns:platformFaults="urn:faults_{api_version}.platform.webservices.netsuite.com" xmlns:platformMsgs="urn:messages_{api_version}.platform.webservices.netsuite.com" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="urn:platform_{api_version}.webservices.netsuite.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <soap:Header>
-                <searchPreferences xmlns:ns7="urn:messages_2025_1.platform.webservices.netsuite.com">
+                <searchPreferences xmlns:ns7="urn:messages_{api_version}.platform.webservices.netsuite.com">
                     <pageSize>{page_size}</pageSize>
                 </searchPreferences>
                 <tokenPassport>
@@ -211,13 +212,14 @@ class SavedSearchesClient(Stream):
             page=1,
             saved_search_internal_id=None
         ):
-        url = f"https://{self.config['ns_account']}.suitetalk.api.netsuite.com/services/NetSuitePort_2025_1"
+        api_version = get_api_version_from_urn(saved_search_type_urn)
+        url = f"https://{self.config['ns_account']}.suitetalk.api.netsuite.com/services/NetSuitePort_{api_version}"
         oauth_creds = self.ns_client._build_soap_headers()
         oauth_creds = oauth_creds["tokenPassport"]
 
-        base_request = f"""<soap:Envelope xmlns:platformFaults="urn:faults_2025_1.platform.webservices.netsuite.com" xmlns:platformMsgs="urn:messages_2025_1.platform.webservices.netsuite.com" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="urn:platform_2025_1.webservices.netsuite.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        base_request = f"""<soap:Envelope xmlns:platformFaults="urn:faults_{api_version}.platform.webservices.netsuite.com" xmlns:platformMsgs="urn:messages_{api_version}.platform.webservices.netsuite.com" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="urn:platform_{api_version}.webservices.netsuite.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <soap:Header>
-                <searchPreferences xmlns:ns7="urn:messages_2020_2.platform.webservices.netsuite.com">
+                <searchPreferences xmlns:ns7="urn:messages_{api_version}.platform.webservices.netsuite.com">
                     <pageIndex>{page}</pageIndex>
                     <pageSize>{page_size}</pageSize>
                 </searchPreferences>
