@@ -18,7 +18,8 @@ class SavedSearchesClient(Stream):
     def __init__(self, *args, **kwargs):
         self.ns_client = NetSuiteClient(
             account=self.config.get("ns_account"),
-            caching=True
+            caching=True,
+            wsdl_version=get_api_version_from_urn(self.ns_urn_type),
         )
         self.ns_client.connect_tba(
             consumer_key=self.config.get("ns_consumer_key"),
